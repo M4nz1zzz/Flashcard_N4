@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Belajar N4</title>
+<title>Flashcard N5-N4 by manziz</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;700&display=swap">
 <style>
-/* Layout: satu kolom sempit, tab di atas, kartu besar di tengah, kontrol di bawah kartu */
+/* Layout: satu kolom sempit, tab di atas, filter level/kategori, lalu konten utama */
 :root {
   --bg: #f4f6f9;
   --surface: #ffffff;
@@ -45,16 +45,19 @@ body {
 main { max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
 h1 { font-family: var(--font-jp); font-size: 1.5rem; margin: 0; text-wrap: balance; }
 .sub { color: var(--muted); margin: 2px 0 0; font-size: .9rem; }
+.by { color: var(--accent); font-weight: 600; }
+.foot { text-align: center; color: var(--muted); font-size: .8rem; margin: 8px 0 0; }
 button { font: inherit; color: inherit; cursor: pointer; }
+button:disabled { opacity: .45; cursor: default; }
 button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); }
 .tab { background: none; border: 0; padding: 10px 14px; color: var(--muted); border-bottom: 2px solid transparent; font-weight: 500; }
 .tab[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); }
-.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .chip { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 4px 12px; font-size: .85rem; color: var(--muted); }
 .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
-.meta { display: flex; justify-content: space-between; color: var(--muted); font-size: .85rem; font-variant-numeric: tabular-nums; }
-.bar { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.meta { display: flex; justify-content: space-between; gap: 8px; color: var(--muted); font-size: .85rem; font-variant-numeric: tabular-nums; }
+.bar { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; margin: 6px 0 12px; }
 .bar > i { display: block; height: 100%; background: var(--accent); width: 0; transition: width .2s; }
 .card {
   background: var(--surface); border: 1px solid var(--line); border-radius: 14px; min-height: 240px;
@@ -65,25 +68,43 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .card .kana { font-family: var(--font-jp); font-size: 1.25rem; color: var(--accent); }
 .card .romaji { color: var(--muted); font-size: .95rem; }
 .card .arti { font-size: 1.3rem; font-weight: 600; margin-top: 6px; text-wrap: balance; }
-.card .hint { color: var(--muted); font-size: .8rem; }
+.card .hint, .hintq { color: var(--muted); font-size: .85rem; }
+.card.exam { min-height: 0; align-items: stretch; justify-content: flex-start; text-align: left; cursor: default; gap: 12px; }
+.qtext { font-family: var(--font-jp); font-size: 1.15rem; line-height: 1.7; }
+.passage { font-family: var(--font-jp); line-height: 1.9; padding: 12px; background: var(--bg); border-radius: 10px; overflow-wrap: anywhere; }
+.sent { font-size: clamp(1.4rem, 6vw, 2rem) !important; line-height: 1.6; }
 .tag { font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.pill { font-size: .7rem; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
 .row { display: flex; gap: 8px; flex-wrap: wrap; }
 .row > button { flex: 1 1 120px; }
 .btn { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 10px 14px; font-weight: 500; }
 .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
 .btn.good { border-color: var(--good); color: var(--good); }
 .opts { display: grid; gap: 8px; }
-.opt { text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 12px 14px; }
+.opt { text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 12px 14px; font-family: var(--font-jp); }
 .opt.ok { background: var(--good-bg); border-color: var(--good); }
 .opt.no { background: var(--bad-bg); border-color: var(--bad); }
+.opt.sel { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.explain { margin-top: 12px; padding: 12px 14px; border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 10px; background: var(--surface); font-size: .95rem; }
+.jpf { font-family: var(--font-jp); }
+.tr { color: var(--muted); font-size: .9rem; }
 .result { text-align: center; padding: 24px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
 .result .big { font-size: 2.6rem; font-weight: 600; font-variant-numeric: tabular-nums; }
 .gram { display: grid; gap: 10px; }
 .g { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+.ghead { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .g h3 { margin: 0; font-family: var(--font-jp); font-size: 1.1rem; color: var(--accent); }
 .g p { margin: 4px 0 0; }
 .g .ex { font-family: var(--font-jp); }
-.g .tr { color: var(--muted); font-size: .9rem; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.panel p { margin: 0; }
+.tlist { margin: 0; padding-left: 1.1rem; display: grid; gap: 4px; }
+.sgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; text-align: center; margin-top: 12px; }
+.stat { border: 1px solid var(--line); border-radius: 10px; padding: 10px 8px; }
+.stat b { display: block; font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+details.review { margin-top: 12px; text-align: left; }
+details.review summary { cursor: pointer; font-weight: 500; }
+.ritem { border-top: 1px solid var(--line); padding: 10px 0; display: grid; gap: 4px; }
 [hidden] { display: none !important; }
 </style>
 </head>
@@ -91,8 +112,8 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 <main>
   <header>
-    <h1>日本語 N4</h1>
-    <p class="sub">Flashcard kosakata, kuis, dan pola tata bahasa JLPT N4.</p>
+    <h1>日本語 N5・N4</h1>
+    <p class="sub"><strong class="by">Flashcard by manziz</strong> · kosakata, kuis, tryout, dan pola kalimat JLPT N5 dan N4.</p>
   </header>
 
   <div class="tabs" role="tablist">
@@ -101,11 +122,12 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
     <button class="tab" role="tab" id="tab-tata" aria-selected="false" data-tab="tata">Tata bahasa</button>
   </div>
 
+  <div class="chips" id="lvchips" aria-label="Filter level"></div>
   <div class="chips" id="chips" aria-label="Filter kategori"></div>
 
   <section id="kartu">
     <div class="meta"><span id="kartu-pos"></span><span id="kartu-known"></span></div>
-    <div class="bar" style="margin:6px 0 12px"><i id="kartu-bar"></i></div>
+    <div class="bar"><i id="kartu-bar"></i></div>
     <button class="card" id="card" aria-live="polite"></button>
     <div class="row" style="margin-top:12px">
       <button class="btn" id="prev">Sebelumnya</button>
@@ -120,22 +142,68 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   </section>
 
   <section id="kuis" hidden>
-    <div class="meta"><span id="q-pos"></span><span id="q-score"></span></div>
-    <div class="bar" style="margin:6px 0 12px"><i id="q-bar"></i></div>
-    <div class="card" id="q-card" style="cursor:default"></div>
-    <div class="opts" id="opts" style="margin-top:12px"></div>
-    <div class="row" style="margin-top:12px"><button class="btn primary" id="q-next" hidden>Lanjut</button></div>
-    <div class="result" id="q-result" hidden></div>
+    <div class="chips" id="modes" style="margin-bottom:12px">
+      <button class="chip" aria-pressed="true" data-m="kosakata">Kuis kosakata</button>
+      <button class="chip" aria-pressed="false" data-m="pola">Kuis pola kalimat</button>
+      <button class="chip" aria-pressed="false" data-m="tryout">Tryout JLPT</button>
+    </div>
+
+    <div id="quiz-normal">
+      <div class="chips" id="cnt" style="margin-bottom:12px"></div>
+      <div class="meta"><span id="q-pos"></span><span id="q-score"></span></div>
+      <div class="bar"><i id="q-bar"></i></div>
+      <div class="card" id="q-card" style="cursor:default"></div>
+      <div class="opts" id="opts" style="margin-top:12px"></div>
+      <div class="explain" id="q-explain" hidden></div>
+      <div class="row" style="margin-top:12px"><button class="btn primary" id="q-next" hidden>Lanjut</button></div>
+      <div class="result" id="q-result" hidden></div>
+    </div>
+
+    <div id="tryout" hidden>
+      <div class="panel" id="t-start">
+        <p><strong>Tryout JLPT</strong>: simulasi ujian dengan tiga bagian. Jawaban baru dibahas setelah selesai, seperti ujian sungguhan. Soal ini latihan buatan sendiri, bukan soal resmi JLPT.</p>
+        <div class="chips" id="tlv"></div>
+        <ul class="tlist">
+          <li>文字・語彙 (kosakata dan kanji): 12 soal</li>
+          <li>文法 (tata bahasa): 10 soal</li>
+          <li>読解 (membaca): 6 soal</li>
+        </ul>
+        <button class="btn primary" id="t-go">Mulai tryout</button>
+        <p class="hintq" id="t-best"></p>
+      </div>
+
+      <div id="t-run" hidden>
+        <div class="meta"><span id="t-sec"></span><span id="t-time">00:00</span></div>
+        <div class="meta"><span id="t-pos"></span><span id="t-note"></span></div>
+        <div class="bar"><i id="t-bar"></i></div>
+        <div class="card exam" id="t-card"></div>
+        <div class="opts" id="t-opts" style="margin-top:12px"></div>
+        <div class="row" style="margin-top:12px">
+          <button class="btn" id="t-prev">Sebelumnya</button>
+          <button class="btn primary" id="t-next">Lanjut</button>
+        </div>
+      </div>
+
+      <div class="result" id="t-result" hidden></div>
+    </div>
   </section>
 
   <section id="tata" hidden>
     <div class="gram" id="gram"></div>
   </section>
+
+  <p class="foot">Flashcard by manziz</p>
 </main>
 
 <script>
+/* ---------- utilitas ---------- */
+const $ = id => document.getElementById(id);
+const shuffled = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const sample = (a, n) => shuffled(a).slice(0, n);
+
+/* ---------- data kosakata: [kanji, kana, romaji, arti, kategori, level (kosong = N4)] ---------- */
 const WORDS = [
-  // kata kerja
+  // N4: kata kerja
   ["運転する","うんてんする","unten suru","mengemudi","Kata kerja"],
   ["準備する","じゅんびする","junbi suru","bersiap-siap","Kata kerja"],
   ["説明する","せつめいする","setsumei suru","menjelaskan","Kata kerja"],
@@ -155,18 +223,18 @@ const WORDS = [
   ["壊れる","こわれる","kowareru","rusak","Kata kerja"],
   ["見える","みえる","mieru","terlihat","Kata kerja"],
   ["聞こえる","きこえる","kikoeru","terdengar","Kata kerja"],
-  // kata benda
+  // N4: kata benda
   ["経験","けいけん","keiken","pengalaman","Kata benda"],
   ["予定","よてい","yotei","rencana, jadwal","Kata benda"],
   ["理由","りゆう","riyū","alasan","Kata benda"],
   ["習慣","しゅうかん","shūkan","kebiasaan","Kata benda"],
-  ["趣味","しゅみ","shumi","hobi","Kata benda"],
+  ["趣味","しゅみ","shumi","hobi","Kata benda","N5"],
   ["会議","かいぎ","kaigi","rapat","Kata benda"],
   ["規則","きそく","kisoku","peraturan","Kata benda"],
   ["試合","しあい","shiai","pertandingan","Kata benda"],
   ["事故","じこ","jiko","kecelakaan","Kata benda"],
   ["地震","じしん","jishin","gempa bumi","Kata benda"],
-  ["旅行","りょこう","ryokō","perjalanan wisata","Kata benda"],
+  ["旅行","りょこう","ryokō","perjalanan wisata","Kata benda","N5"],
   ["約束","やくそく","yakusoku","janji","Kata benda"],
   ["工場","こうじょう","kōjō","pabrik","Kata benda"],
   ["空港","くうこう","kūkō","bandara","Kata benda"],
@@ -174,7 +242,7 @@ const WORDS = [
   ["研究","けんきゅう","kenkyū","penelitian","Kata benda"],
   ["文化","ぶんか","bunka","budaya","Kata benda"],
   ["将来","しょうらい","shōrai","masa depan","Kata benda"],
-  // kata sifat
+  // N4: kata sifat
   ["大切","たいせつ","taisetsu","penting, berharga","Kata sifat"],
   ["親切","しんせつ","shinsetsu","ramah, baik hati","Kata sifat"],
   ["丈夫","じょうぶ","jōbu","kuat, tahan lama","Kata sifat"],
@@ -187,70 +255,250 @@ const WORDS = [
   ["苦い","にがい","nigai","pahit","Kata sifat"],
   ["暖かい","あたたかい","atatakai","hangat","Kata sifat"],
   ["珍しい","めずらしい","mezurashii","langka, jarang","Kata sifat"],
-  // kata keterangan
+  // N4: keterangan
   ["急に","きゅうに","kyū ni","tiba-tiba","Keterangan"],
   ["必ず","かならず","kanarazu","pasti, tanpa gagal","Keterangan"],
   ["特に","とくに","toku ni","terutama","Keterangan"],
   ["例えば","たとえば","tatoeba","misalnya","Keterangan"],
-  ["全然","ぜんぜん","zenzen","sama sekali (dengan bentuk negatif)","Keterangan"],
+  ["全然","ぜんぜん","zenzen","sama sekali (dengan bentuk negatif)","Keterangan","N5"],
   ["だんだん","だんだん","dandan","lambat laun","Keterangan"],
-  ["最近","さいきん","saikin","akhir-akhir ini","Keterangan"]
-].map((w, i) => ({ id: i, jp: w[0], kana: w[1], romaji: w[2], arti: w[3], cat: w[4] }));
+  ["最近","さいきん","saikin","akhir-akhir ini","Keterangan"],
+  // N5: kata kerja
+  ["食べる","たべる","taberu","makan","Kata kerja","N5"],
+  ["飲む","のむ","nomu","minum","Kata kerja","N5"],
+  ["見る","みる","miru","melihat, menonton","Kata kerja","N5"],
+  ["行く","いく","iku","pergi","Kata kerja","N5"],
+  ["来る","くる","kuru","datang","Kata kerja","N5"],
+  ["買う","かう","kau","membeli","Kata kerja","N5"],
+  ["話す","はなす","hanasu","berbicara","Kata kerja","N5"],
+  ["読む","よむ","yomu","membaca","Kata kerja","N5"],
+  ["書く","かく","kaku","menulis","Kata kerja","N5"],
+  ["聞く","きく","kiku","mendengar, bertanya","Kata kerja","N5"],
+  ["待つ","まつ","matsu","menunggu","Kata kerja","N5"],
+  ["働く","はたらく","hataraku","bekerja","Kata kerja","N5"],
+  ["歩く","あるく","aruku","berjalan kaki","Kata kerja","N5"],
+  ["教える","おしえる","oshieru","mengajar, memberi tahu","Kata kerja","N5"],
+  ["覚える","おぼえる","oboeru","menghafal, mengingat","Kata kerja","N5"],
+  ["開ける","あける","akeru","membuka (sesuatu)","Kata kerja","N5"],
+  ["始まる","はじまる","hajimaru","dimulai","Kata kerja","N5"],
+  ["終わる","おわる","owaru","selesai","Kata kerja","N5"],
+  // N5: kata benda
+  ["学校","がっこう","gakkō","sekolah","Kata benda","N5"],
+  ["友達","ともだち","tomodachi","teman","Kata benda","N5"],
+  ["先生","せんせい","sensei","guru","Kata benda","N5"],
+  ["電車","でんしゃ","densha","kereta listrik","Kata benda","N5"],
+  ["天気","てんき","tenki","cuaca","Kata benda","N5"],
+  ["仕事","しごと","shigoto","pekerjaan","Kata benda","N5"],
+  ["病院","びょういん","byōin","rumah sakit","Kata benda","N5"],
+  ["銀行","ぎんこう","ginkō","bank","Kata benda","N5"],
+  ["駅","えき","eki","stasiun","Kata benda","N5"],
+  ["毎朝","まいあさ","maiasa","setiap pagi","Kata benda","N5"],
+  ["誕生日","たんじょうび","tanjōbi","hari ulang tahun","Kata benda","N5"],
+  ["荷物","にもつ","nimotsu","barang bawaan","Kata benda","N5"],
+  ["宿題","しゅくだい","shukudai","pekerjaan rumah","Kata benda","N5"],
+  ["部屋","へや","heya","kamar","Kata benda","N5"],
+  ["野菜","やさい","yasai","sayuran","Kata benda","N5"],
+  // N5: kata sifat
+  ["新しい","あたらしい","atarashii","baru","Kata sifat","N5"],
+  ["古い","ふるい","furui","tua, lama (untuk benda)","Kata sifat","N5"],
+  ["高い","たかい","takai","tinggi, mahal","Kata sifat","N5"],
+  ["安い","やすい","yasui","murah","Kata sifat","N5"],
+  ["忙しい","いそがしい","isogashii","sibuk","Kata sifat","N5"],
+  ["楽しい","たのしい","tanoshii","menyenangkan","Kata sifat","N5"],
+  ["難しい","むずかしい","muzukashii","sulit","Kata sifat","N5"],
+  ["便利","べんり","benri","praktis, berguna","Kata sifat","N5"],
+  ["元気","げんき","genki","sehat, bersemangat","Kata sifat","N5"],
+  ["静か","しずか","shizuka","sepi, tenang","Kata sifat","N5"],
+  // N5: keterangan
+  ["とても","とても","totemo","sangat","Keterangan","N5"],
+  ["ゆっくり","ゆっくり","yukkuri","pelan-pelan","Keterangan","N5"],
+  ["もう","もう","mō","sudah","Keterangan","N5"],
+  ["まだ","まだ","mada","masih, belum","Keterangan","N5"],
+  ["いつも","いつも","itsumo","selalu","Keterangan","N5"],
+  ["時々","ときどき","tokidoki","kadang-kadang","Keterangan","N5"]
+].map((w, i) => ({ id: i, jp: w[0], kana: w[1], romaji: w[2], arti: w[3], cat: w[4], lv: w[5] || "N4" }));
 
+/* ---------- data tata bahasa: [pola, arti, contoh, terjemahan, level] ---------- */
 const GRAMMAR = [
-  ["〜たことがある", "Pernah melakukan sesuatu", "日本へ行ったことがあります。", "Saya pernah pergi ke Jepang."],
-  ["〜なければならない", "Harus melakukan sesuatu", "薬を飲まなければなりません。", "Saya harus minum obat."],
-  ["〜ことにする", "Memutuskan untuk melakukan", "毎日走ることにしました。", "Saya memutuskan untuk berlari setiap hari."],
-  ["〜ようにする", "Berusaha membiasakan diri", "野菜を食べるようにしています。", "Saya berusaha makan sayur."],
-  ["〜そうだ", "Sepertinya akan (berdasarkan penampilan)", "雨が降りそうです。", "Sepertinya akan hujan."],
-  ["〜ために", "Untuk tujuan", "日本語を勉強するために、日本へ来ました。", "Saya datang ke Jepang untuk belajar bahasa Jepang."],
-  ["〜てもいい", "Boleh melakukan", "ここで写真を撮ってもいいですか。", "Bolehkah saya mengambil foto di sini?"],
-  ["〜ば", "Jika (syarat)", "安ければ、買います。", "Kalau murah, saya akan beli."],
-  ["〜ながら", "Sambil melakukan", "音楽を聞きながら勉強します。", "Saya belajar sambil mendengarkan musik."]
+  ["〜ています", "Sedang melakukan, atau keadaan yang berlangsung", "今、勉強しています。", "Sekarang saya sedang belajar.", "N5"],
+  ["〜たいです", "Ingin melakukan", "水が飲みたいです。", "Saya ingin minum air.", "N5"],
+  ["〜ましょう", "Mari melakukan (ajakan)", "いっしょに行きましょう。", "Mari pergi bersama.", "N5"],
+  ["〜ませんか", "Maukah (ajakan sopan)", "日曜日、いっしょに映画を見ませんか。", "Maukah menonton film bersama hari Minggu?", "N5"],
+  ["〜てください", "Tolong lakukan", "ここに名前を書いてください。", "Tolong tulis nama Anda di sini.", "N5"],
+  ["〜ないでください", "Tolong jangan melakukan", "ここでたばこを吸わないでください。", "Tolong jangan merokok di sini.", "N5"],
+  ["〜から", "Karena", "暑いから、窓を開けます。", "Karena panas, saya buka jendela.", "N5"],
+  ["〜てもいい", "Boleh melakukan", "ここで写真を撮ってもいいですか。", "Bolehkah saya memotret di sini?", "N5"],
+  ["〜てから", "Setelah melakukan", "手を洗ってから、食べます。", "Setelah cuci tangan, saya makan.", "N5"],
+  ["〜まえに", "Sebelum", "寝る前に、歯をみがきます。", "Sebelum tidur, saya sikat gigi.", "N5"],
+  ["〜に行く", "Pergi untuk melakukan", "図書館へ本を借りに行きます。", "Saya pergi ke perpustakaan untuk meminjam buku.", "N5"],
+  ["〜より〜ほうが", "Lebih ... daripada ...", "電車よりバスのほうが安いです。", "Bus lebih murah daripada kereta.", "N5"],
+  ["〜が欲しいです", "Ingin memiliki (benda)", "新しいかばんが欲しいです。", "Saya ingin tas baru.", "N5"],
+  ["〜たことがある", "Pernah melakukan sesuatu", "日本へ行ったことがあります。", "Saya pernah pergi ke Jepang.", "N4"],
+  ["〜なければならない", "Harus melakukan sesuatu", "薬を飲まなければなりません。", "Saya harus minum obat.", "N4"],
+  ["〜ことにする", "Memutuskan untuk melakukan", "毎日走ることにしました。", "Saya memutuskan untuk berlari setiap hari.", "N4"],
+  ["〜ようにする", "Berusaha membiasakan diri", "野菜を食べるようにしています。", "Saya berusaha makan sayur.", "N4"],
+  ["〜そうだ", "Sepertinya akan (berdasarkan penampilan)", "雨が降りそうです。", "Sepertinya akan hujan.", "N4"],
+  ["〜ために", "Untuk tujuan", "日本語を勉強するために、日本へ来ました。", "Saya datang ke Jepang untuk belajar bahasa Jepang.", "N4"],
+  ["〜ば", "Jika (syarat)", "安ければ、買います。", "Kalau murah, saya beli.", "N4"],
+  ["〜ながら", "Sambil melakukan", "音楽を聞きながら勉強します。", "Saya belajar sambil mendengarkan musik.", "N4"],
+  ["〜ので", "Karena (alasan)", "頭が痛いので、休みます。", "Karena kepala sakit, saya istirahat.", "N4"],
+  ["〜たら", "Kalau, setelah", "時間があったら、手伝います。", "Kalau ada waktu, saya bantu.", "N4"],
+  ["〜すぎる", "Terlalu ...", "昨日はケーキを食べすぎました。", "Kemarin saya makan kue terlalu banyak.", "N4"],
+  ["〜と思う", "Saya kira, saya pikir", "明日は雨が降ると思います。", "Saya kira besok akan hujan.", "N4"],
+  ["〜ようになる", "Menjadi bisa, menjadi terbiasa", "日本語が話せるようになりました。", "Sekarang saya jadi bisa berbicara bahasa Jepang.", "N4"],
+  ["〜てしまう", "Terlanjur, atau selesai sepenuhnya", "財布を忘れてしまいました。", "Saya terlanjur lupa membawa dompet.", "N4"],
+  ["〜やすい / 〜にくい", "Mudah / sulit dilakukan", "このペンは書きやすいです。", "Pulpen ini mudah dipakai menulis.", "N4"],
+  ["〜とき", "Pada saat", "暇なとき、映画を見ます。", "Saat senggang, saya menonton film.", "N4"],
+  ["〜ておく", "Melakukan lebih dulu sebagai persiapan", "旅行の前に、ホテルを予約しておきます。", "Sebelum bepergian, saya pesan hotel lebih dulu.", "N4"],
+  ["〜と", "Kalau X, maka Y pasti terjadi", "このボタンを押すと、ドアが開きます。", "Kalau tombol ini ditekan, pintu terbuka.", "N4"]
 ];
 
-const $ = id => document.getElementById(id);
+/* ---------- soal pola kalimat: [level, pola, kalimat, "benar|salah1|salah2|salah3", arti, penjelasan] ---------- */
+const GQ = [
+  ["N5","〜ています","今、友達と電話し＿＿＿。","ています|たいです|ましょう|ないでください","Sekarang saya sedang menelepon teman.","Bentuk て + います menyatakan kegiatan yang sedang berlangsung."],
+  ["N5","〜たいです","夏休みに北海道へ行き＿＿＿。","たいです|ています|ましょう|てください","Saya ingin pergi ke Hokkaido saat liburan musim panas.","Kata kerja bentuk ます tanpa ます + たいです berarti ingin melakukan."],
+  ["N5","〜ましょう","いっしょに昼ごはんを食べ＿＿＿。","ましょう|たいです|ています|ないでください","Mari makan siang bersama.","ましょう dipakai untuk mengajak, artinya mari melakukan."],
+  ["N5","〜てください","ここに名前を書い＿＿＿。","てください|たいです|ましょう|ながら","Tolong tulis nama Anda di sini.","Bentuk て + ください dipakai untuk meminta, artinya tolong lakukan."],
+  ["N5","〜ないでください","夜は大きい音で音楽を聞か＿＿＿。","ないでください|てください|ましょう|たいです","Tolong jangan mendengarkan musik keras-keras di malam hari.","Bentuk ない + でください berarti tolong jangan melakukan."],
+  ["N5","〜から","今日は暑い＿＿＿、窓を開けます。","から|まえに|ながら|たいです","Karena hari ini panas, saya buka jendela.","から di akhir bagian kalimat menyatakan alasan."],
+  ["N5","〜てもいい","この本を借り＿＿＿いいですか。","ても|ないで|ながら|ように","Bolehkah saya meminjam buku ini?","Bentuk て + もいいですか dipakai untuk meminta izin."],
+  ["N5","〜てから","宿題をし＿＿＿、テレビを見ます。","てから|ながら|ないで|たいです","Setelah mengerjakan PR, saya menonton TV.","Bentuk て + から berarti setelah melakukan sesuatu."],
+  ["N5","〜まえに","寝る＿＿＿、歯をみがきます。","まえに|てから|ながら|たいです","Sebelum tidur, saya sikat gigi.","Kata kerja bentuk kamus + まえに berarti sebelum melakukan sesuatu."],
+  ["N5","〜に行く","図書館へ本を借り＿＿＿行きます。","に|ながら|てから|まえに","Saya pergi ke perpustakaan untuk meminjam buku.","Kata kerja bentuk ます tanpa ます + に行く menyatakan tujuan perjalanan."],
+  ["N5","〜より〜ほうが","電車＿＿＿バスのほうが安いです。","より|から|まで|ので","Bus lebih murah daripada kereta.","AよりBのほうが〜 berarti B lebih ... daripada A."],
+  ["N5","〜が欲しいです","新しいかばん＿＿＿欲しいです。","が|を|に|で","Saya ingin tas baru.","Benda yang diinginkan ditandai partikel が: 〜が欲しいです."],
+  ["N5","〜ませんか","日曜日、いっしょに映画を見＿＿＿。","ませんか|ないでください|ています|てから","Maukah kita menonton film bersama hari Minggu?","〜ませんか dipakai untuk mengajak dengan sopan."],
+  ["N5","〜ています","兄は銀行で働い＿＿＿。","ています|たいです|ましょう|ないでください","Kakak laki-laki saya bekerja di bank.","Bentuk て + います juga dipakai untuk keadaan atau pekerjaan yang berlangsung terus."],
+  ["N5","〜たいです","のどがかわいたので、水が飲み＿＿＿。","たいです|ています|ましょう|ながら","Karena haus, saya ingin minum air.","Kata kerja bentuk ます tanpa ます + たいです = ingin melakukan."],
+  ["N5","〜てください","もう一度、ゆっくり話し＿＿＿。","てください|たいです|ながら|ないで","Tolong bicara sekali lagi dengan pelan.","Bentuk て + ください = tolong lakukan."],
+  ["N5","〜から","雨が降っている＿＿＿、傘を持って行きます。","から|まえに|てから|ながら","Karena sedang hujan, saya membawa payung.","から menyatakan alasan."],
+  ["N5","〜まえに","食事の＿＿＿、手を洗います。","まえに|てから|ながら|たら","Sebelum makan, saya cuci tangan.","Kata benda + の + まえに berarti sebelum ..."],
+  ["N5","〜てから","朝ごはんを食べ＿＿＿、学校へ行きます。","てから|まえに|ながら|たいです","Setelah sarapan, saya pergi ke sekolah.","Bentuk て + から berarti setelah."],
+  ["N5","〜ませんか","あした、買い物に行き＿＿＿。","ませんか|ないでください|ています|てから","Besok maukah pergi belanja (bersama saya)?","〜ませんか dipakai untuk mengajak dengan sopan."],
+  ["N5","〜に行く","友達と泳ぎ＿＿＿行きました。","に|ながら|てから|まえに","Saya pergi berenang bersama teman.","Kata kerja bentuk ます tanpa ます + に行く = pergi untuk melakukan sesuatu."],
+  ["N5","〜より〜ほうが","犬＿＿＿猫のほうが好きです。","より|から|まで|ので","Saya lebih suka kucing daripada anjing.","AよりBのほうが好きです = lebih suka B daripada A."],
+  ["N5","〜てもいい","ここに座っ＿＿＿いいですか。","ても|ないで|ながら|ように","Bolehkah saya duduk di sini?","〜てもいいですか dipakai untuk meminta izin."],
+  ["N5","〜が欲しいです","誕生日に新しい時計＿＿＿欲しいです。","が|を|へ|で","Untuk ulang tahun, saya ingin jam tangan baru.","〜が欲しい: benda yang diinginkan memakai が."],
+  ["N5","〜ています","姉は今、料理を作っ＿＿＿。","ています|たいです|ましょう|てください","Kakak perempuan saya sekarang sedang memasak.","Bentuk て + います = sedang melakukan."],
+
+  ["N4","〜たことがある","日本へ行った＿＿＿あります。","ことが|ために|ながら|そうに","Saya pernah pergi ke Jepang.","Bentuk た + ことがある berarti pernah melakukan sesuatu."],
+  ["N4","〜なければならない","薬を飲ま＿＿＿なりません。","なければ|ながら|ないで|ために","Saya harus minum obat.","Bentuk ない diubah menjadi なければならない untuk menyatakan keharusan."],
+  ["N4","〜ことにする","毎日走る＿＿＿しました。","ことに|ながら|たら|そうに","Saya memutuskan untuk berlari setiap hari.","Kata kerja bentuk kamus + ことにする berarti memutuskan untuk melakukan sesuatu."],
+  ["N4","〜ようにする","野菜を食べる＿＿＿しています。","ように|ながら|そうに|ために","Saya berusaha makan sayur.","Kata kerja bentuk kamus + ようにする berarti berusaha atau membiasakan diri melakukan sesuatu."],
+  ["N4","〜そうだ","雨が降り＿＿＿です。","そう|ながら|ために|なければ","Sepertinya akan hujan.","Kata kerja bentuk ます tanpa ます + そうだ berarti tampaknya akan terjadi."],
+  ["N4","〜ために","日本語を勉強する＿＿＿、日本へ来ました。","ために|ながら|そうに|ても","Saya datang ke Jepang untuk belajar bahasa Jepang.","Kata kerja bentuk kamus + ために menyatakan tujuan."],
+  ["N4","〜ば","安＿＿＿、買います。","ければ|ながら|そうに|ないで","Kalau murah, saya beli.","Kata sifat-い: ganti い dengan ければ untuk bentuk syarat."],
+  ["N4","〜ながら","音楽を聞き＿＿＿勉強します。","ながら|ために|ても|そうに","Saya belajar sambil mendengarkan musik.","Kata kerja bentuk ます tanpa ます + ながら berarti dua kegiatan berlangsung bersamaan."],
+  ["N4","〜ので","頭が痛い＿＿＿、休みます。","ので|ながら|ても|ないで","Karena kepala sakit, saya istirahat.","ので menyatakan alasan, nadanya lebih halus daripada から."],
+  ["N4","〜たら","時間が＿＿＿、手伝います。","あったら|あって|ありながら|あるために","Kalau ada waktu, saya bantu.","Bentuk た + ら berarti kalau atau jika sesuatu terjadi."],
+  ["N4","〜すぎる","昨日はケーキを食べ＿＿＿ました。","すぎ|そう|ながら|たい","Kemarin saya makan kue terlalu banyak.","Kata kerja bentuk ます tanpa ます + すぎる berarti terlalu."],
+  ["N4","〜と思う","明日は雨が降る＿＿＿思います。","と|を|に|が","Saya kira besok akan hujan.","Kalimat bentuk biasa + と思います berarti saya kira atau saya pikir."],
+  ["N4","〜ようになる","毎日練習して、日本語が話せる＿＿＿なりました。","ように|ことに|ために|ながら","Karena berlatih tiap hari, sekarang saya jadi bisa berbicara bahasa Jepang.","Kata kerja + ようになる berarti berubah menjadi bisa atau menjadi terbiasa."],
+  ["N4","〜てしまう","財布を忘れ＿＿＿ました。","てしまい|てください|ながら|ために","Saya (terlanjur) lupa membawa dompet.","Bentuk て + しまう berarti terlanjur, tidak sengaja, atau selesai sepenuhnya."],
+  ["N4","〜やすい","このペンは書き＿＿＿です。","やすい|にくい|ながら|ために","Pulpen ini mudah dipakai menulis.","Kata kerja bentuk ます tanpa ます + やすい berarti mudah dilakukan."],
+  ["N4","〜とき","暇な＿＿＿、映画を見ます。","とき|ながら|ので|ように","Kalau sedang senggang, saya menonton film.","Kata sifat-な + とき berarti pada saat ..."],
+  ["N4","〜ておく","旅行の前に、ホテルを予約し＿＿＿ます。","ておき|てください|ながら|ために","Sebelum bepergian, saya pesan hotel lebih dulu.","Bentuk て + おく berarti melakukan sesuatu lebih dulu sebagai persiapan."],
+  ["N4","〜と","このボタンを押す＿＿＿、ドアが開きます。","と|ば|から|ので","Kalau tombol ini ditekan, pintu terbuka.","Kata kerja bentuk kamus + と menyatakan hasil yang otomatis atau pasti terjadi."],
+  ["N4","〜ば","急げ＿＿＿、間に合います。","ば|ながら|ために|そうに","Kalau bergegas, Anda akan tepat waktu.","Kata kerja kelompok う: ubah u menjadi e lalu tambah ば untuk bentuk syarat."],
+  ["N4","〜なければならない","明日は早く起き＿＿＿ならない。","なければ|ないで|ながら|そうに","Besok saya harus bangun pagi.","Bentuk ない diubah menjadi なければならない = harus."],
+  ["N4","〜たことがある","富士山に登った＿＿＿がありますか。","こと|とき|ため|よう","Apakah Anda pernah mendaki Gunung Fuji?","Bentuk た + ことがありますか dipakai untuk menanyakan pengalaman."],
+  ["N4","〜ことにする","来年、留学する＿＿＿しました。","ことに|ように|ために|ながら","Saya memutuskan untuk belajar ke luar negeri tahun depan.","ことにする menyatakan keputusan yang diambil sendiri."],
+  ["N4","〜ようにする","できるだけ早く寝る＿＿＿しています。","ように|ことが|ために|そうに","Saya berusaha tidur secepat mungkin.","ようにする berarti berusaha melakukan sesuatu atau menjadikannya kebiasaan."],
+  ["N4","〜そうだ","このケーキはおいし＿＿＿です。","そう|たい|ながら|ために","Kue ini kelihatannya enak.","Kata sifat-い: buang い lalu tambah そう = tampaknya."],
+  ["N4","〜ために","健康の＿＿＿、毎日運動します。","ために|ように|ながら|ので","Demi kesehatan, saya berolahraga setiap hari.","Kata benda + の + ために berarti demi atau untuk."],
+  ["N4","〜ので","時間がない＿＿＿、タクシーで行きます。","ので|ながら|ても|ように","Karena tidak ada waktu, saya naik taksi.","ので menyatakan alasan."],
+  ["N4","〜たら","雨が降っ＿＿＿、行きません。","たら|ながら|ために|そうに","Kalau hujan, saya tidak pergi.","Bentuk た + ら berarti kalau."],
+  ["N4","〜すぎる","この問題は難し＿＿＿ます。","すぎ|そう|やすい|ながら","Soal ini terlalu sulit.","Kata sifat-い: buang い + すぎる = terlalu."],
+  ["N4","〜と思う","田中さんはもう帰った＿＿＿思います。","と|を|に|で","Saya kira Tanaka sudah pulang.","Bentuk biasa + と思います = saya kira."],
+  ["N4","〜ようになる","最近、早く起きられる＿＿＿なりました。","ように|ために|ながら|ことが","Akhir-akhir ini saya jadi bisa bangun pagi.","ようになる menyatakan perubahan keadaan: menjadi bisa."],
+  ["N4","〜てしまう","宿題を全部やっ＿＿＿ました。","てしまい|てください|ながら|ために","Saya sudah menyelesaikan semua PR.","て + しまう juga berarti selesai sepenuhnya."],
+  ["N4","〜ておく","友達が来る前に、部屋を掃除し＿＿＿ます。","ておき|てください|ながら|ために","Sebelum teman datang, saya bersihkan kamar dulu.","て + おく = melakukan sesuatu terlebih dahulu."],
+  ["N4","〜にくい","この漢字は覚え＿＿＿です。","にくい|やすい|ながら|ために","Kanji ini sulit dihafal.","Kata kerja bentuk ます tanpa ます + にくい = sulit dilakukan."],
+  ["N4","〜とき","日本へ行った＿＿＿、おみやげを買いました。","とき|ながら|ように|そうに","Saat pergi ke Jepang, saya membeli oleh-oleh.","Kata kerja bentuk biasa + とき berarti pada saat ..."],
+  ["N4","〜と","春になる＿＿＿、桜が咲きます。","と|ながら|ために|そうに","Kalau sudah musim semi, bunga sakura mekar.","Kata kerja bentuk kamus + と = kalau X terjadi, Y pasti terjadi."],
+  ["N4","〜ながら","歩き＿＿＿スマホを見ないでください。","ながら|ために|ても|そうに","Tolong jangan melihat ponsel sambil berjalan.","Kata kerja bentuk ます tanpa ます + ながら = sambil."],
+  ["N4","〜ば","天気がよけれ＿＿＿、出かけます。","ば|ながら|ために|そうに","Kalau cuacanya bagus, saya pergi keluar.","Kata sifat-い: よい menjadi よければ untuk bentuk syarat."]
+].map(r => ({ lv: r[0], p: r[1], s: r[2], o: r[3].split("|"), tr: r[4], why: r[5] }));
+
+/* ---------- data tryout: membaca (読解) ---------- */
+const DOKKAI = {
+  N5: [
+    { t: "わたしは毎朝六時に起きます。顔を洗って、朝ごはんを食べます。それから、七時に家を出て、電車で会社へ行きます。",
+      id: "Saya bangun jam enam setiap pagi. Saya cuci muka dan sarapan. Setelah itu, jam tujuh saya keluar rumah dan pergi ke kantor naik kereta.",
+      qs: [["この人は何時に家を出ますか。", "七時|六時|八時|九時"], ["この人はどうやって会社へ行きますか。", "電車で|バスで|歩いて|車で"]] },
+    { t: "昨日は日曜日でした。天気がよかったので、友達と公園へ行きました。公園でお弁当を食べて、写真をたくさん撮りました。とても楽しかったです。",
+      id: "Kemarin hari Minggu. Karena cuacanya bagus, saya pergi ke taman bersama teman. Di taman kami makan bekal dan banyak mengambil foto. Sangat menyenangkan.",
+      qs: [["昨日、どこへ行きましたか。", "公園|学校|会社|駅"], ["どうして公園へ行きましたか。", "天気がよかったから|雨だったから|仕事があったから|病気だったから"]] },
+    { t: "田中さんは大学生です。大学の近くのアパートに一人で住んでいます。毎日、自分で晩ごはんを作ります。料理はあまり上手じゃありませんが、作るのが好きです。",
+      id: "Tanaka adalah mahasiswa. Ia tinggal sendirian di apartemen dekat kampus. Setiap hari ia memasak makan malam sendiri. Ia tidak terlalu pandai memasak, tetapi suka memasak.",
+      qs: [["田中さんはどこに住んでいますか。", "大学の近くのアパート|大学の中|友達の家|家族の家"], ["田中さんについて、正しいのはどれですか。", "料理を作るのが好きです|料理がとても上手です|友達と住んでいます|晩ごはんは外で食べます"]] }
+  ],
+  N4: [
+    { t: "来週の土曜日に、クラスのみんなでバーベキューをします。場所は川の近くの公園です。駅に九時に集合して、バスで公園へ行きます。食べ物は先生が準備しますが、飲み物は自分で持って来てください。雨の場合は、前の日にメールで連絡します。",
+      id: "Hari Sabtu minggu depan, seluruh kelas akan berpesta barbekyu. Tempatnya di taman dekat sungai. Kami berkumpul di stasiun jam sembilan, lalu naik bus ke taman. Makanan disiapkan guru, tetapi minuman tolong bawa sendiri. Jika hujan, kami akan mengabari lewat email sehari sebelumnya.",
+      qs: [["飲み物はだれが準備しますか。", "学生が自分で持って来ます|先生が準備します|公園の店が準備します|クラスの代表が準備します"], ["雨の場合、どうなりますか。", "前の日にメールで連絡があります|バーベキューは必ずします|駅で九時に聞きます|先生に電話します"]] },
+    { t: "私は先月、新しい仕事を始めました。前の会社では毎日残業がありましたが、今の会社は六時に帰ることができます。給料は少し安くなりましたが、家族と過ごす時間が増えたので、今のほうがいいと思います。",
+      id: "Saya mulai pekerjaan baru bulan lalu. Di perusahaan sebelumnya saya lembur setiap hari, tetapi di perusahaan sekarang saya bisa pulang jam enam. Gajinya menjadi sedikit lebih rendah, tetapi waktu bersama keluarga bertambah, jadi saya pikir yang sekarang lebih baik.",
+      qs: [["前の会社はどうでしたか。", "毎日残業がありました|六時に帰れました|家族と過ごす時間が多かったです|給料が今より安かったです"], ["この人はどうして今の仕事のほうがいいと思っていますか。", "家族と過ごす時間が増えたから|給料が高いから|会社が家から近いから|仕事が簡単だから"]] },
+    { t: "【お知らせ】図書館は、来月一日から開く時間が変わります。今までは九時から五時まででしたが、これからは十時から七時までになります。また、本を借りられる数は一人五冊までです。返す日を忘れないでください。",
+      id: "[Pemberitahuan] Mulai tanggal 1 bulan depan, jam buka perpustakaan berubah. Sampai sekarang pukul 9 sampai 5, mulai sekarang pukul 10 sampai 7. Selain itu, jumlah buku yang bisa dipinjam maksimal 5 per orang. Jangan lupa tanggal pengembalian.",
+      qs: [["来月から、図書館は何時に閉まりますか。", "七時|五時|九時|十時"], ["お知らせの内容と合っているのはどれですか。", "一人五冊まで借りられます|九時に開きます|本は何冊でも借りられます|返す日はありません"]] }
+  ]
+};
+
+/* ---------- state umum ---------- */
 const CATS = ["Semua", ...new Set(WORDS.map(w => w.cat))];
-let cat = "Semua", deck = [], idx = 0, flipped = false, hideKnown = false;
+const LVS = ["Semua", "N5", "N4"];
+const COUNTS = [10, 20, 30];
+let tab = "kartu", mode = "kosakata", lv = "Semua", cat = "Semua", count = 10;
+let deck = [], idx = 0, flipped = false, hideKnown = false;
 let known = new Set();
 try { known = new Set(JSON.parse(localStorage.getItem("n4-known") || "[]")); } catch (e) {}
 function save() { try { localStorage.setItem("n4-known", JSON.stringify([...known])); } catch (e) {} }
-function shuffled(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
-function pool() { return WORDS.filter(w => cat === "Semua" || w.cat === cat); }
+function pool() { return WORDS.filter(w => (lv === "Semua" || w.lv === lv) && (cat === "Semua" || w.cat === cat)); }
 
+function renderChips() {
+  $("lvchips").innerHTML = LVS.map(l => `<button class="chip" aria-pressed="${l === lv}" data-l="${l}">${l === "Semua" ? "Semua level" : l}</button>`).join("");
+  $("chips").innerHTML = CATS.map(c => `<button class="chip" aria-pressed="${c === cat}" data-c="${c}">${c === "Semua" ? "Semua kategori" : c}</button>`).join("");
+  $("cnt").innerHTML = `<span class="hintq">Jumlah soal:</span>` + COUNTS.map(n => `<button class="chip" aria-pressed="${n === count}" data-n="${n}">${n}</button>`).join("");
+}
+function syncControls() {
+  const k = tab === "kuis";
+  $("lvchips").hidden = k && mode === "tryout";
+  $("chips").hidden = !(tab === "kartu" || (k && mode === "kosakata"));
+  $("quiz-normal").hidden = mode === "tryout";
+  $("tryout").hidden = mode !== "tryout";
+}
+
+/* ---------- flashcard ---------- */
 function buildDeck(keepOrder) {
   let list = pool();
   if (hideKnown) list = list.filter(w => !known.has(w.id));
   deck = keepOrder ? list : shuffled(list);
   idx = 0; flipped = false;
 }
-
-function renderChips() {
-  $("chips").innerHTML = CATS.map(c => `<button class="chip" aria-pressed="${c === cat}" data-c="${c}">${c}</button>`).join("");
-}
-
 function renderCard() {
-  const total = pool().length, k = pool().filter(w => known.has(w.id)).length;
+  const p = pool(), total = p.length, k = p.filter(w => known.has(w.id)).length;
   $("kartu-known").textContent = `Hafal ${k} dari ${total}`;
   $("kartu-bar").style.width = total ? (k / total * 100) + "%" : "0";
   const c = $("card");
   if (!deck.length) {
     $("kartu-pos").textContent = "0 kartu";
-    c.innerHTML = `<div class="arti">Semua kartu di kategori ini sudah hafal.</div><div class="hint">Matikan "Sembunyikan yang hafal" atau reset progres.</div>`;
+    c.innerHTML = total
+      ? `<div class="arti">Semua kartu di filter ini sudah hafal.</div><div class="hint">Matikan "Sembunyikan yang hafal" atau reset progres.</div>`
+      : `<div class="arti">Tidak ada kartu untuk filter ini.</div>`;
     return;
   }
   const w = deck[idx];
   $("kartu-pos").textContent = `Kartu ${idx + 1} dari ${deck.length}`;
   c.innerHTML = flipped
-    ? `<div class="tag">${w.cat}</div><div class="jp">${w.jp}</div><div class="kana">${w.kana}</div><div class="romaji">${w.romaji}</div><div class="arti">${w.arti}</div>`
-    : `<div class="tag">${w.cat}</div><div class="jp">${w.jp}</div><div class="hint">Ketuk untuk melihat arti</div>`;
+    ? `<div class="tag">${w.cat} · ${w.lv}</div><div class="jp">${w.jp}</div><div class="kana">${w.kana}</div><div class="romaji">${w.romaji}</div><div class="arti">${w.arti}</div>`
+    : `<div class="tag">${w.cat} · ${w.lv}</div><div class="jp">${w.jp}</div><div class="hint">Ketuk untuk melihat arti</div>`;
 }
-
 function move(d) {
   if (!deck.length) return;
   idx = (idx + d + deck.length) % deck.length; flipped = false; renderCard();
 }
-
 $("card").onclick = () => { if (deck.length) { flipped = !flipped; renderCard(); } };
 $("next").onclick = () => move(1);
 $("prev").onclick = () => move(-1);
@@ -268,39 +516,69 @@ $("hidebtn").onclick = () => {
 };
 $("reset").onclick = () => { known = new Set(); save(); buildDeck(true); renderCard(); };
 
+/* ---------- filter ---------- */
+$("lvchips").onclick = e => {
+  const b = e.target.closest("[data-l]"); if (!b) return;
+  lv = b.dataset.l; renderChips(); buildDeck(true); renderCard(); startQuiz(); renderGram();
+};
 $("chips").onclick = e => {
   const b = e.target.closest("[data-c]"); if (!b) return;
   cat = b.dataset.c; renderChips(); buildDeck(true); renderCard(); startQuiz();
 };
+$("cnt").onclick = e => {
+  const b = e.target.closest("[data-n]"); if (!b) return;
+  count = Number(b.dataset.n); renderChips(); startQuiz();
+};
 
-// kuis
+/* ---------- kuis kosakata dan pola kalimat ---------- */
 let qs = [], qi = 0, score = 0, answered = false;
 function startQuiz() {
-  qs = shuffled(pool()).slice(0, 10); qi = 0; score = 0; answered = false;
-  $("q-result").hidden = true; $("q-card").hidden = false; $("opts").hidden = false;
+  if (mode === "tryout") return;
+  const src = mode === "pola" ? GQ.filter(q => lv === "Semua" || q.lv === lv) : pool();
+  qs = shuffled(src).slice(0, count); qi = 0; score = 0; answered = false;
+  $("q-explain").hidden = true; $("q-result").hidden = true; $("q-next").hidden = true;
+  $("q-card").hidden = false; $("opts").hidden = false;
+  if (!qs.length) {
+    $("q-pos").textContent = ""; $("q-score").textContent = ""; $("q-bar").style.width = "0";
+    $("q-card").innerHTML = `<div class="arti">Tidak ada soal untuk filter ini.</div>`;
+    $("opts").innerHTML = "";
+    return;
+  }
   renderQ();
 }
 function renderQ() {
   if (qi >= qs.length) return finishQuiz();
   const w = qs[qi]; answered = false;
+  $("q-explain").hidden = true;
   $("q-pos").textContent = `Soal ${qi + 1} dari ${qs.length}`;
   $("q-score").textContent = `Skor ${score}`;
   $("q-bar").style.width = (qi / qs.length * 100) + "%";
-  $("q-card").innerHTML = `<div class="tag">Apa arti kata ini?</div><div class="jp">${w.jp}</div><div class="kana">${w.kana}</div>`;
-  const wrong = shuffled(WORDS.filter(x => x.id !== w.id && x.arti !== w.arti)).slice(0, 3);
-  const choices = shuffled([w, ...wrong]);
-  $("opts").innerHTML = choices.map(c => `<button class="opt" data-id="${c.id}">${c.arti}</button>`).join("");
+  let choices;
+  if (mode === "pola") {
+    $("q-card").innerHTML = `<div class="tag">Lengkapi kalimat · ${w.lv}</div><div class="jp sent">${w.s}</div><div class="hintq">Arti: ${w.tr}</div>`;
+    choices = shuffled(w.o.map((t, i) => ({ t, ok: i === 0 })));
+  } else {
+    $("q-card").innerHTML = `<div class="tag">Apa arti kata ini? · ${w.lv}</div><div class="jp">${w.jp}</div><div class="kana">${w.kana}</div>`;
+    const wrong = shuffled(WORDS.filter(x => x.id !== w.id && x.arti !== w.arti)).slice(0, 3);
+    choices = shuffled([w, ...wrong]).map(c => ({ t: c.arti, ok: c.id === w.id }));
+  }
+  $("opts").innerHTML = choices.map(c => `<button class="opt" data-ok="${c.ok ? 1 : 0}">${c.t}</button>`).join("");
   $("q-next").hidden = true;
 }
 $("opts").onclick = e => {
   const b = e.target.closest(".opt"); if (!b || answered) return;
   answered = true;
-  const w = qs[qi], ok = Number(b.dataset.id) === w.id;
+  const w = qs[qi], ok = b.dataset.ok === "1";
   if (ok) score++;
-  document.querySelectorAll(".opt").forEach(o => {
-    if (Number(o.dataset.id) === w.id) o.classList.add("ok");
+  document.querySelectorAll("#opts .opt").forEach(o => {
+    if (o.dataset.ok === "1") o.classList.add("ok");
     else if (o === b) o.classList.add("no");
   });
+  if (mode === "pola") {
+    const x = $("q-explain");
+    x.innerHTML = `<strong>${w.p}</strong><br>${w.why}<br><span class="jpf">${w.s.replace("＿＿＿", w.o[0])}</span>`;
+    x.hidden = false;
+  }
   $("q-score").textContent = `Skor ${score}`;
   $("q-next").textContent = qi + 1 === qs.length ? "Lihat hasil" : "Lanjut";
   $("q-next").hidden = false;
@@ -308,23 +586,159 @@ $("opts").onclick = e => {
 $("q-next").onclick = () => { qi++; renderQ(); };
 function finishQuiz() {
   $("q-bar").style.width = "100%";
-  $("q-card").hidden = true; $("opts").hidden = true; $("q-next").hidden = true;
+  $("q-card").hidden = true; $("opts").hidden = true; $("q-next").hidden = true; $("q-explain").hidden = true;
   const r = $("q-result"); r.hidden = false;
   r.innerHTML = `<div class="big">${score} / ${qs.length}</div><p>${score === qs.length ? "Sempurna." : score >= qs.length * 0.7 ? "Bagus, sedikit lagi." : "Ulangi kartu dulu, lalu coba lagi."}</p><button class="btn primary" id="again">Main lagi</button>`;
   $("again").onclick = startQuiz;
 }
 
-// tata bahasa
-$("gram").innerHTML = GRAMMAR.map(g => `<div class="g"><h3>${g[0]}</h3><p>${g[1]}</p><p class="ex">${g[2]}</p><p class="tr">${g[3]}</p></div>`).join("");
+/* ---------- tata bahasa ---------- */
+function renderGram() {
+  const list = GRAMMAR.filter(g => lv === "Semua" || g[4] === lv);
+  $("gram").innerHTML = list.map(g => `<div class="g"><div class="ghead"><h3>${g[0]}</h3><span class="pill">${g[4]}</span></div><p>${g[1]}</p><p class="ex">${g[2]}</p><p class="tr">${g[3]}</p></div>`).join("");
+}
 
-// tab
+/* ---------- tryout JLPT ---------- */
+const SEC = { moji: ["文字・語彙", "Kosakata dan kanji"], bunpou: ["文法", "Tata bahasa"], dokkai: ["読解", "Membaca"] };
+let tlv = "N5", T = null, timerId = null, bestScores = {};
+try { bestScores = JSON.parse(localStorage.getItem("n4-best") || "{}"); } catch (e) {}
+
+function wordExpl(w) { return `${w.jp}（${w.kana} / ${w.romaji}）= ${w.arti}`; }
+
+function buildTryout(level) {
+  const items = [];
+  const pw = WORDS.filter(w => w.lv === level);
+  const kw = pw.filter(w => w.jp !== w.kana);
+  const used = new Set();
+  const take = (arr, n) => {
+    const out = [];
+    for (const w of shuffled(arr)) { if (!used.has(w.id)) { used.add(w.id); out.push(w); if (out.length === n) break; } }
+    return out;
+  };
+  const mk = (sec, q, correct, wrongs, expl, extra) => {
+    const opts = shuffled([correct, ...wrongs].map((t, i) => ({ t, ok: i === 0 })));
+    items.push(Object.assign({ sec, q, opts, expl }, extra || {}));
+  };
+  // 文字・語彙: 5 cara baca, 4 penulisan kanji, 3 arti
+  take(kw, 5).forEach(w => mk("moji",
+    `「${w.jp}」の読み方はどれですか。<div class="hintq">Pilih cara baca yang benar.</div>`,
+    w.kana, sample(kw.filter(x => x.kana !== w.kana), 3).map(x => x.kana), wordExpl(w)));
+  take(kw, 4).forEach(w => mk("moji",
+    `「${w.kana}」を漢字で書くと、どれですか。<div class="hintq">Pilih tulisan kanji yang benar.</div>`,
+    w.jp, sample(kw.filter(x => x.jp !== w.jp), 3).map(x => x.jp), wordExpl(w)));
+  take(pw, 3).forEach(w => mk("moji",
+    `「${w.jp}」（${w.kana}）の意味はどれですか。<div class="hintq">Pilih arti yang benar.</div>`,
+    w.arti, sample(pw.filter(x => x.arti !== w.arti), 3).map(x => x.arti), wordExpl(w)));
+  // 文法: 10 soal dari bank pola kalimat
+  sample(GQ.filter(g => g.lv === level), 10).forEach(g => mk("bunpou",
+    `${g.s}<div class="hintq">Arti: ${g.tr}</div>`,
+    g.o[0], g.o.slice(1), `<strong>${g.p}</strong> ${g.why}<br><span class="jpf">${g.s.replace("＿＿＿", g.o[0])}</span>`));
+  // 読解
+  DOKKAI[level].forEach(p => p.qs.forEach(q => {
+    const o = q[1].split("|");
+    mk("dokkai", q[0], o[0], o.slice(1), `<span class="tr">Terjemahan teks: ${p.id}</span>`, { ctx: p.t });
+  }));
+  return items;
+}
+
+function fmtTime(ms) {
+  const s = Math.floor(ms / 1000);
+  return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+}
+function renderTStart() {
+  $("tlv").innerHTML = ["N5", "N4"].map(l => `<button class="chip" aria-pressed="${l === tlv}" data-tl="${l}">${l}</button>`).join("");
+  $("t-best").textContent = bestScores[tlv] != null ? `Skor terbaik ${tlv}: ${bestScores[tlv]}%` : "";
+}
+$("tlv").onclick = e => {
+  const b = e.target.closest("[data-tl]"); if (!b) return;
+  tlv = b.dataset.tl; renderTStart();
+};
+$("t-go").onclick = () => {
+  T = { level: tlv, items: buildTryout(tlv), ans: [], i: 0, t0: Date.now(), warned: false };
+  $("t-start").hidden = true; $("t-result").hidden = true; $("t-run").hidden = false;
+  clearInterval(timerId);
+  timerId = setInterval(() => { $("t-time").textContent = fmtTime(Date.now() - T.t0); }, 1000);
+  $("t-time").textContent = "00:00";
+  renderT();
+};
+function renderT() {
+  const it = T.items[T.i];
+  $("t-sec").textContent = `${SEC[it.sec][0]} · ${SEC[it.sec][1]} · ${T.level}`;
+  $("t-pos").textContent = `Soal ${T.i + 1} dari ${T.items.length}`;
+  $("t-note").textContent = "";
+  $("t-bar").style.width = (T.ans.filter(a => a !== undefined).length / T.items.length * 100) + "%";
+  let html = "";
+  if (it.ctx) html += `<div class="passage">${it.ctx}</div>`;
+  html += `<div class="qtext">${it.q}</div>`;
+  $("t-card").innerHTML = html;
+  $("t-opts").innerHTML = it.opts.map((o, k) => `<button class="opt${T.ans[T.i] === k ? " sel" : ""}" data-k="${k}">${o.t}</button>`).join("");
+  $("t-prev").disabled = T.i === 0;
+  $("t-next").textContent = T.i === T.items.length - 1 ? "Selesai" : "Lanjut";
+}
+$("t-opts").onclick = e => {
+  const b = e.target.closest(".opt"); if (!b || !T) return;
+  T.ans[T.i] = Number(b.dataset.k); T.warned = false;
+  document.querySelectorAll("#t-opts .opt").forEach(o => o.classList.toggle("sel", o === b));
+  $("t-bar").style.width = (T.ans.filter(a => a !== undefined).length / T.items.length * 100) + "%";
+  $("t-note").textContent = "";
+};
+$("t-prev").onclick = () => { if (T.i > 0) { T.i--; renderT(); } };
+$("t-next").onclick = () => {
+  if (T.i < T.items.length - 1) { T.i++; renderT(); return; }
+  let left = 0;
+  for (let k = 0; k < T.items.length; k++) if (T.ans[k] === undefined) left++;
+  if (left > 0 && !T.warned) { T.warned = true; $("t-note").textContent = `Masih ${left} soal belum dijawab. Tekan Selesai lagi untuk mengakhiri.`; return; }
+  finishTryout();
+};
+function finishTryout() {
+  clearInterval(timerId);
+  const per = {}; let right = 0;
+  T.items.forEach((it, i) => {
+    const s = per[it.sec] || (per[it.sec] = { r: 0, n: 0 });
+    s.n++;
+    if (T.ans[i] !== undefined && it.opts[T.ans[i]].ok) { s.r++; right++; }
+  });
+  const n = T.items.length, pct = Math.round(right / n * 100);
+  if (bestScores[T.level] == null || pct > bestScores[T.level]) {
+    bestScores[T.level] = pct;
+    try { localStorage.setItem("n4-best", JSON.stringify(bestScores)); } catch (e) {}
+  }
+  const wrong = [];
+  T.items.forEach((it, i) => {
+    const okAns = it.opts.find(o => o.ok).t;
+    const mine = T.ans[i] === undefined ? "(tidak dijawab)" : it.opts[T.ans[i]].t;
+    if (mine !== okAns) wrong.push(`<div class="ritem"><div class="tag">${SEC[it.sec][0]}</div><div class="qtext">${it.q}</div><div class="tr">Jawaban Anda: ${mine} · Benar: <strong>${okAns}</strong></div><div class="tr">${it.expl}</div></div>`);
+  });
+  const msg = pct >= 80 ? "Sangat baik. Coba tryout level berikutnya atau ulangi untuk soal yang berbeda."
+    : pct >= 60 ? "Cukup baik. Pelajari pembahasan di bawah, lalu coba lagi."
+    : "Masih perlu latihan. Ulangi kartu dan tata bahasa dulu, lalu coba tryout lagi.";
+  $("t-run").hidden = true;
+  const r = $("t-result"); r.hidden = false;
+  r.innerHTML = `<div class="tag">Hasil tryout ${T.level}</div><div class="big">${right} / ${n}</div><p>${pct}% benar · waktu ${fmtTime(Date.now() - T.t0)}</p>`
+    + `<div class="sgrid">${Object.keys(SEC).map(k => `<div class="stat"><span class="hintq">${SEC[k][0]}</span><b>${per[k].r} / ${per[k].n}</b></div>`).join("")}</div>`
+    + `<p style="margin-top:12px">${msg}</p><p class="hintq">Ini skor latihan, bukan skor resmi JLPT.</p>`
+    + (wrong.length ? `<details class="review"><summary>Lihat pembahasan (${wrong.length} soal salah atau kosong)</summary>${wrong.join("")}</details>` : "")
+    + `<div class="row" style="margin-top:12px"><button class="btn primary" id="t-again">Tryout lagi</button></div>`;
+  $("t-again").onclick = () => { r.hidden = true; $("t-start").hidden = false; renderTStart(); };
+}
+
+/* ---------- tab dan mode ---------- */
 document.querySelectorAll(".tab").forEach(t => t.onclick = () => {
+  tab = t.dataset.tab;
   document.querySelectorAll(".tab").forEach(x => x.setAttribute("aria-selected", x === t));
-  ["kartu", "kuis", "tata"].forEach(id => $(id).hidden = id !== t.dataset.tab);
-  $("chips").hidden = t.dataset.tab === "tata";
+  ["kartu", "kuis", "tata"].forEach(id => $(id).hidden = id !== tab);
+  syncControls();
 });
+$("modes").onclick = e => {
+  const b = e.target.closest("[data-m]"); if (!b) return;
+  mode = b.dataset.m;
+  document.querySelectorAll("#modes .chip").forEach(x => x.setAttribute("aria-pressed", x === b));
+  syncControls();
+  if (mode !== "tryout") startQuiz();
+};
 
-renderChips(); buildDeck(false); renderCard(); startQuiz();
+/* ---------- mulai ---------- */
+renderChips(); buildDeck(false); renderCard(); startQuiz(); renderGram(); renderTStart(); syncControls();
 </script>
 </body>
 </html>
