@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Belajar N4</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>
+/* Layout: satu kolom sempit, tab di atas, kartu besar di tengah, kontrol di bawah kartu */
+:root {
+  --bg: #f4f6f9;
+  --surface: #ffffff;
+  --fg: #151a24;
+  --muted: #5c6577;
+  --line: #d9dee7;
+  --accent: #2c4a9a;
+  --accent-fg: #ffffff;
+  --good: #1d7a4d;
+  --good-bg: #e0f3e8;
+  --bad: #b3261e;
+  --bad-bg: #fbe4e2;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-jp: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f131b; --surface: #181e2a; --fg: #e8ecf4; --muted: #9aa5ba; --line: #2b3446;
+    --accent: #8fa8f0; --accent-fg: #0f131b; --good: #6fd3a0; --good-bg: #17352a; --bad: #f2a29b; --bad-bg: #3d1f1d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f131b; --surface: #181e2a; --fg: #e8ecf4; --muted: #9aa5ba; --line: #2b3446;
+  --accent: #8fa8f0; --accent-fg: #0f131b; --good: #6fd3a0; --good-bg: #17352a; --bad: #f2a29b; --bad-bg: #3d1f1d;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 16px; line-height: 1.5;
+  padding-block: 20px 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+main { max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+h1 { font-family: var(--font-jp); font-size: 1.5rem; margin: 0; text-wrap: balance; }
+.sub { color: var(--muted); margin: 2px 0 0; font-size: .9rem; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); }
+.tab { background: none; border: 0; padding: 10px 14px; color: var(--muted); border-bottom: 2px solid transparent; font-weight: 500; }
+.tab[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 4px 12px; font-size: .85rem; color: var(--muted); }
+.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
+.meta { display: flex; justify-content: space-between; color: var(--muted); font-size: .85rem; font-variant-numeric: tabular-nums; }
+.bar { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.bar > i { display: block; height: 100%; background: var(--accent); width: 0; transition: width .2s; }
+.card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 14px; min-height: 240px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  padding: 24px 16px; text-align: center; width: 100%; cursor: pointer;
+}
+.card .jp { font-family: var(--font-jp); font-size: clamp(2rem, 9vw, 3rem); font-weight: 500; line-height: 1.25; overflow-wrap: anywhere; }
+.card .kana { font-family: var(--font-jp); font-size: 1.25rem; color: var(--accent); }
+.card .romaji { color: var(--muted); font-size: .95rem; }
+.card .arti { font-size: 1.3rem; font-weight: 600; margin-top: 6px; text-wrap: balance; }
+.card .hint { color: var(--muted); font-size: .8rem; }
+.tag { font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.row { display: flex; gap: 8px; flex-wrap: wrap; }
+.row > button { flex: 1 1 120px; }
+.btn { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 10px 14px; font-weight: 500; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
+.btn.good { border-color: var(--good); color: var(--good); }
+.opts { display: grid; gap: 8px; }
+.opt { text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 12px 14px; }
+.opt.ok { background: var(--good-bg); border-color: var(--good); }
+.opt.no { background: var(--bad-bg); border-color: var(--bad); }
+.result { text-align: center; padding: 24px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+.result .big { font-size: 2.6rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.gram { display: grid; gap: 10px; }
+.g { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+.g h3 { margin: 0; font-family: var(--font-jp); font-size: 1.1rem; color: var(--accent); }
+.g p { margin: 4px 0 0; }
+.g .ex { font-family: var(--font-jp); }
+.g .tr { color: var(--muted); font-size: .9rem; }
+[hidden] { display: none !important; }
+</style>
+</head>
+<body>
+
+<main>
+  <header>
+    <h1>日本語 N4</h1>
+    <p class="sub">Flashcard kosakata, kuis, dan pola tata bahasa JLPT N4.</p>
+  </header>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tab-kartu" aria-selected="true" data-tab="kartu">Kartu</button>
+    <button class="tab" role="tab" id="tab-kuis" aria-selected="false" data-tab="kuis">Kuis</button>
+    <button class="tab" role="tab" id="tab-tata" aria-selected="false" data-tab="tata">Tata bahasa</button>
+  </div>
+
+  <div class="chips" id="chips" aria-label="Filter kategori"></div>
+
+  <section id="kartu">
+    <div class="meta"><span id="kartu-pos"></span><span id="kartu-known"></span></div>
+    <div class="bar" style="margin:6px 0 12px"><i id="kartu-bar"></i></div>
+    <button class="card" id="card" aria-live="polite"></button>
+    <div class="row" style="margin-top:12px">
+      <button class="btn" id="prev">Sebelumnya</button>
+      <button class="btn good" id="know">Sudah hafal</button>
+      <button class="btn primary" id="next">Lanjut</button>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <button class="btn" id="shuffle">Acak urutan</button>
+      <button class="btn" id="hidebtn">Sembunyikan yang hafal: mati</button>
+      <button class="btn" id="reset">Reset progres</button>
+    </div>
+  </section>
+
+  <section id="kuis" hidden>
+    <div class="meta"><span id="q-pos"></span><span id="q-score"></span></div>
+    <div class="bar" style="margin:6px 0 12px"><i id="q-bar"></i></div>
+    <div class="card" id="q-card" style="cursor:default"></div>
+    <div class="opts" id="opts" style="margin-top:12px"></div>
+    <div class="row" style="margin-top:12px"><button class="btn primary" id="q-next" hidden>Lanjut</button></div>
+    <div class="result" id="q-result" hidden></div>
+  </section>
+
+  <section id="tata" hidden>
+    <div class="gram" id="gram"></div>
+  </section>
+</main>
+
+<script>
+const WORDS = [
+  // kata kerja
+  ["運転する","うんてんする","unten suru","mengemudi","Kata kerja"],
+  ["準備する","じゅんびする","junbi suru","bersiap-siap","Kata kerja"],
+  ["説明する","せつめいする","setsumei suru","menjelaskan","Kata kerja"],
+  ["相談する","そうだんする","sōdan suru","berkonsultasi","Kata kerja"],
+  ["届ける","とどける","todokeru","mengantarkan","Kata kerja"],
+  ["決める","きめる","kimeru","memutuskan","Kata kerja"],
+  ["集まる","あつまる","atsumaru","berkumpul","Kata kerja"],
+  ["間に合う","まにあう","ma ni au","sempat, tepat waktu","Kata kerja"],
+  ["比べる","くらべる","kuraberu","membandingkan","Kata kerja"],
+  ["育てる","そだてる","sodateru","membesarkan, memelihara","Kata kerja"],
+  ["忘れる","わすれる","wasureru","lupa","Kata kerja"],
+  ["続ける","つづける","tsuzukeru","melanjutkan","Kata kerja"],
+  ["慣れる","なれる","nareru","menjadi terbiasa","Kata kerja"],
+  ["払う","はらう","harau","membayar","Kata kerja"],
+  ["片付ける","かたづける","katazukeru","merapikan","Kata kerja"],
+  ["戻る","もどる","modoru","kembali","Kata kerja"],
+  ["壊れる","こわれる","kowareru","rusak","Kata kerja"],
+  ["見える","みえる","mieru","terlihat","Kata kerja"],
+  ["聞こえる","きこえる","kikoeru","terdengar","Kata kerja"],
+  // kata benda
+  ["経験","けいけん","keiken","pengalaman","Kata benda"],
+  ["予定","よてい","yotei","rencana, jadwal","Kata benda"],
+  ["理由","りゆう","riyū","alasan","Kata benda"],
+  ["習慣","しゅうかん","shūkan","kebiasaan","Kata benda"],
+  ["趣味","しゅみ","shumi","hobi","Kata benda"],
+  ["会議","かいぎ","kaigi","rapat","Kata benda"],
+  ["規則","きそく","kisoku","peraturan","Kata benda"],
+  ["試合","しあい","shiai","pertandingan","Kata benda"],
+  ["事故","じこ","jiko","kecelakaan","Kata benda"],
+  ["地震","じしん","jishin","gempa bumi","Kata benda"],
+  ["旅行","りょこう","ryokō","perjalanan wisata","Kata benda"],
+  ["約束","やくそく","yakusoku","janji","Kata benda"],
+  ["工場","こうじょう","kōjō","pabrik","Kata benda"],
+  ["空港","くうこう","kūkō","bandara","Kata benda"],
+  ["小説","しょうせつ","shōsetsu","novel","Kata benda"],
+  ["研究","けんきゅう","kenkyū","penelitian","Kata benda"],
+  ["文化","ぶんか","bunka","budaya","Kata benda"],
+  ["将来","しょうらい","shōrai","masa depan","Kata benda"],
+  // kata sifat
+  ["大切","たいせつ","taisetsu","penting, berharga","Kata sifat"],
+  ["親切","しんせつ","shinsetsu","ramah, baik hati","Kata sifat"],
+  ["丈夫","じょうぶ","jōbu","kuat, tahan lama","Kata sifat"],
+  ["複雑","ふくざつ","fukuzatsu","rumit","Kata sifat"],
+  ["不便","ふべん","fuben","tidak praktis","Kata sifat"],
+  ["危ない","あぶない","abunai","berbahaya","Kata sifat"],
+  ["厳しい","きびしい","kibishii","ketat, keras","Kata sifat"],
+  ["詳しい","くわしい","kuwashii","terperinci, tahu betul","Kata sifat"],
+  ["眠い","ねむい","nemui","mengantuk","Kata sifat"],
+  ["苦い","にがい","nigai","pahit","Kata sifat"],
+  ["暖かい","あたたかい","atatakai","hangat","Kata sifat"],
+  ["珍しい","めずらしい","mezurashii","langka, jarang","Kata sifat"],
+  // kata keterangan
+  ["急に","きゅうに","kyū ni","tiba-tiba","Keterangan"],
+  ["必ず","かならず","kanarazu","pasti, tanpa gagal","Keterangan"],
+  ["特に","とくに","toku ni","terutama","Keterangan"],
+  ["例えば","たとえば","tatoeba","misalnya","Keterangan"],
+  ["全然","ぜんぜん","zenzen","sama sekali (dengan bentuk negatif)","Keterangan"],
+  ["だんだん","だんだん","dandan","lambat laun","Keterangan"],
+  ["最近","さいきん","saikin","akhir-akhir ini","Keterangan"]
+].map((w, i) => ({ id: i, jp: w[0], kana: w[1], romaji: w[2], arti: w[3], cat: w[4] }));
+
+const GRAMMAR = [
+  ["〜たことがある", "Pernah melakukan sesuatu", "日本へ行ったことがあります。", "Saya pernah pergi ke Jepang."],
+  ["〜なければならない", "Harus melakukan sesuatu", "薬を飲まなければなりません。", "Saya harus minum obat."],
+  ["〜ことにする", "Memutuskan untuk melakukan", "毎日走ることにしました。", "Saya memutuskan untuk berlari setiap hari."],
+  ["〜ようにする", "Berusaha membiasakan diri", "野菜を食べるようにしています。", "Saya berusaha makan sayur."],
+  ["〜そうだ", "Sepertinya akan (berdasarkan penampilan)", "雨が降りそうです。", "Sepertinya akan hujan."],
+  ["〜ために", "Untuk tujuan", "日本語を勉強するために、日本へ来ました。", "Saya datang ke Jepang untuk belajar bahasa Jepang."],
+  ["〜てもいい", "Boleh melakukan", "ここで写真を撮ってもいいですか。", "Bolehkah saya mengambil foto di sini?"],
+  ["〜ば", "Jika (syarat)", "安ければ、買います。", "Kalau murah, saya akan beli."],
+  ["〜ながら", "Sambil melakukan", "音楽を聞きながら勉強します。", "Saya belajar sambil mendengarkan musik."]
+];
+
+const $ = id => document.getElementById(id);
+const CATS = ["Semua", ...new Set(WORDS.map(w => w.cat))];
+let cat = "Semua", deck = [], idx = 0, flipped = false, hideKnown = false;
+let known = new Set();
+try { known = new Set(JSON.parse(localStorage.getItem("n4-known") || "[]")); } catch (e) {}
+function save() { try { localStorage.setItem("n4-known", JSON.stringify([...known])); } catch (e) {} }
+function shuffled(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function pool() { return WORDS.filter(w => cat === "Semua" || w.cat === cat); }
+
+function buildDeck(keepOrder) {
+  let list = pool();
+  if (hideKnown) list = list.filter(w => !known.has(w.id));
+  deck = keepOrder ? list : shuffled(list);
+  idx = 0; flipped = false;
+}
+
+function renderChips() {
+  $("chips").innerHTML = CATS.map(c => `<button class="chip" aria-pressed="${c === cat}" data-c="${c}">${c}</button>`).join("");
+}
+
+function renderCard() {
+  const total = pool().length, k = pool().filter(w => known.has(w.id)).length;
+  $("kartu-known").textContent = `Hafal ${k} dari ${total}`;
+  $("kartu-bar").style.width = total ? (k / total * 100) + "%" : "0";
+  const c = $("card");
+  if (!deck.length) {
+    $("kartu-pos").textContent = "0 kartu";
+    c.innerHTML = `<div class="arti">Semua kartu di kategori ini sudah hafal.</div><div class="hint">Matikan "Sembunyikan yang hafal" atau reset progres.</div>`;
+    return;
+  }
+  const w = deck[idx];
+  $("kartu-pos").textContent = `Kartu ${idx + 1} dari ${deck.length}`;
+  c.innerHTML = flipped
+    ? `<div class="tag">${w.cat}</div><div class="jp">${w.jp}</div><div class="kana">${w.kana}</div><div class="romaji">${w.romaji}</div><div class="arti">${w.arti}</div>`
+    : `<div class="tag">${w.cat}</div><div class="jp">${w.jp}</div><div class="hint">Ketuk untuk melihat arti</div>`;
+}
+
+function move(d) {
+  if (!deck.length) return;
+  idx = (idx + d + deck.length) % deck.length; flipped = false; renderCard();
+}
+
+$("card").onclick = () => { if (deck.length) { flipped = !flipped; renderCard(); } };
+$("next").onclick = () => move(1);
+$("prev").onclick = () => move(-1);
+$("know").onclick = () => {
+  if (!deck.length) return;
+  known.add(deck[idx].id); save();
+  if (hideKnown) { deck.splice(idx, 1); if (idx >= deck.length) idx = 0; flipped = false; renderCard(); }
+  else move(1);
+};
+$("shuffle").onclick = () => { buildDeck(false); renderCard(); };
+$("hidebtn").onclick = () => {
+  hideKnown = !hideKnown;
+  $("hidebtn").textContent = "Sembunyikan yang hafal: " + (hideKnown ? "nyala" : "mati");
+  buildDeck(true); renderCard();
+};
+$("reset").onclick = () => { known = new Set(); save(); buildDeck(true); renderCard(); };
+
+$("chips").onclick = e => {
+  const b = e.target.closest("[data-c]"); if (!b) return;
+  cat = b.dataset.c; renderChips(); buildDeck(true); renderCard(); startQuiz();
+};
+
+// kuis
+let qs = [], qi = 0, score = 0, answered = false;
+function startQuiz() {
+  qs = shuffled(pool()).slice(0, 10); qi = 0; score = 0; answered = false;
+  $("q-result").hidden = true; $("q-card").hidden = false; $("opts").hidden = false;
+  renderQ();
+}
+function renderQ() {
+  if (qi >= qs.length) return finishQuiz();
+  const w = qs[qi]; answered = false;
+  $("q-pos").textContent = `Soal ${qi + 1} dari ${qs.length}`;
+  $("q-score").textContent = `Skor ${score}`;
+  $("q-bar").style.width = (qi / qs.length * 100) + "%";
+  $("q-card").innerHTML = `<div class="tag">Apa arti kata ini?</div><div class="jp">${w.jp}</div><div class="kana">${w.kana}</div>`;
+  const wrong = shuffled(WORDS.filter(x => x.id !== w.id && x.arti !== w.arti)).slice(0, 3);
+  const choices = shuffled([w, ...wrong]);
+  $("opts").innerHTML = choices.map(c => `<button class="opt" data-id="${c.id}">${c.arti}</button>`).join("");
+  $("q-next").hidden = true;
+}
+$("opts").onclick = e => {
+  const b = e.target.closest(".opt"); if (!b || answered) return;
+  answered = true;
+  const w = qs[qi], ok = Number(b.dataset.id) === w.id;
+  if (ok) score++;
+  document.querySelectorAll(".opt").forEach(o => {
+    if (Number(o.dataset.id) === w.id) o.classList.add("ok");
+    else if (o === b) o.classList.add("no");
+  });
+  $("q-score").textContent = `Skor ${score}`;
+  $("q-next").textContent = qi + 1 === qs.length ? "Lihat hasil" : "Lanjut";
+  $("q-next").hidden = false;
+};
+$("q-next").onclick = () => { qi++; renderQ(); };
+function finishQuiz() {
+  $("q-bar").style.width = "100%";
+  $("q-card").hidden = true; $("opts").hidden = true; $("q-next").hidden = true;
+  const r = $("q-result"); r.hidden = false;
+  r.innerHTML = `<div class="big">${score} / ${qs.length}</div><p>${score === qs.length ? "Sempurna." : score >= qs.length * 0.7 ? "Bagus, sedikit lagi." : "Ulangi kartu dulu, lalu coba lagi."}</p><button class="btn primary" id="again">Main lagi</button>`;
+  $("again").onclick = startQuiz;
+}
+
+// tata bahasa
+$("gram").innerHTML = GRAMMAR.map(g => `<div class="g"><h3>${g[0]}</h3><p>${g[1]}</p><p class="ex">${g[2]}</p><p class="tr">${g[3]}</p></div>`).join("");
+
+// tab
+document.querySelectorAll(".tab").forEach(t => t.onclick = () => {
+  document.querySelectorAll(".tab").forEach(x => x.setAttribute("aria-selected", x === t));
+  ["kartu", "kuis", "tata"].forEach(id => $(id).hidden = id !== t.dataset.tab);
+  $("chips").hidden = t.dataset.tab === "tata";
+});
+
+renderChips(); buildDeck(false); renderCard(); startQuiz();
+</script>
+</body>
+</html>
